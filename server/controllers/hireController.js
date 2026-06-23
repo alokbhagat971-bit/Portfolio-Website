@@ -3,8 +3,17 @@ import sendEmail from "../utils/sendEmail.js"
 
 export const createHireRequest = async (req, res) => {
   try {
-    const { name, email, subject, projectType, budget, timeline, message } = req.body;
+    const {
+      name,
+      email,
+      subject,
+      projectType,
+      budget,
+      timeline,
+      message
+    } = req.body;
 
+    // validation
     if (!name || !email || !subject || !projectType || !message) {
       return res.status(400).json({
         success: false,
@@ -12,33 +21,61 @@ export const createHireRequest = async (req, res) => {
       });
     }
 
+    // save in DB
     const hireRequest = await HireRequest.create({
-      name, email, subject, projectType, budget, timeline, message,
+      name,
+      email,
+      subject,
+      projectType,
+      budget,
+      timeline,
+      message,
     });
 
+    // send email
     try {
-      await sendEmail({
+      const emailResult = await sendEmail({
         to: process.env.ADMIN_EMAIL,
         subject: `New Hire Request: ${subject}`,
         text: `
-        Name: ${name}
-        Email: ${email}
-        Subject: ${subject}
-        Project Type: ${projectType}
-        Budget: ${budget || "Not specified"}
-        Timeline: ${timeline || "Not specified"}
-        Message: ${message}
+Name: ${name}
+Email: ${email}
+Subject: ${subject}
+Project Type: ${projectType}
+Budget: ${budget || "Not specified"}
+Timeline: ${timeline || "Not specified"}
+Message: ${message}
+        `,
+        html: `
+          <h2>New Hire Request</h2>
+          <p><b>Name:</b> ${name}</p>
+          <p><b>Email:</b> ${email}</p>
+          <p><b>Subject:</b> ${subject}</p>
+          <p><b>Project Type:</b> ${projectType}</p>
+          <p><b>Budget:</b> ${budget || "Not specified"}</p>
+          <p><b>Timeline:</b> ${timeline || "Not specified"}</p>
+          <p><b>Message:</b><br/>${message}</p>
         `,
       });
+
+      console.log("📧 EMAIL SENT SUCCESS:", emailResult?.messageId);
+
     } catch (emailErr) {
-      console.error("🔥 EMAIL FULL ERROR:", emailErr);
+      console.error("🔥 EMAIL FAILED (FULL ERROR):", emailErr);
+      // IMPORTANT: do NOT hide failure
+      return res.status(500).json({
+        success: false,
+        message: "Hire request saved but email failed to send.",
+      });
     }
 
-    res.status(201).json({
+    // final response only if email works
+    return res.status(201).json({
       success: true,
-      message: "Hire request submitted successfully.",
+      message: "Hire request submitted successfully and email sent.",
       data: hireRequest,
     });
+
   } catch (error) {
     if (error.code === 11000) {
       return res.status(409).json({
@@ -46,7 +83,8 @@ export const createHireRequest = async (req, res) => {
         message: "A hire request with this email already exists.",
       });
     }
-    console.error("Error creating hire request:", error.message);
+
+    console.error("Error creating hire request:", error);
     res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
