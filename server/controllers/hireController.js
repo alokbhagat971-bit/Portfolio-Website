@@ -31,7 +31,7 @@ export const createHireRequest = async (req, res) => {
         `,
       });
     } catch (emailErr) {
-      console.error("Email notification failed:", emailErr.message);
+      console.error("🔥 EMAIL FULL ERROR:", emailErr);
     }
 
     res.status(201).json({
