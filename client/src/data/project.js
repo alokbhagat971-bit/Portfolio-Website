@@ -1,4 +1,7 @@
 import AI from "../assets/AI.png"
+import car from '../assets/car.png'
+import expense from '../assets/expense.png'
+import notes from '../assets/notes.png'
 
 const projects = [
   {
@@ -17,7 +20,7 @@ const projects = [
     title: "Car Price Prediction App",
     description:
       "A web app that predicts the resale price of a car based on factors like brand, year, fuel type, and kilometers driven, using a machine learning model served via a Flask API and integrated into a MERN frontend.",
-    image: "/src/assets/car.png",
+    image: car,
     techStack: ["React",  "Python", "Flask", "scikit-learn" , "ML"],
     githubLink: "https://github.com/alokbhagat971-bit/Car-Price-Predictor",
     liveLink: "",
@@ -28,7 +31,7 @@ const projects = [
     title: "Expense Manager App",
     description:
       "A personal finance app to log income and expenses, categorize transactions, and visualize monthly spending trends.",
-    image: "/src/assets/expense.png",
+    image: expense,
     techStack: ["React", "Node.js", "Express", "MongoDB"],
     githubLink: "https://github.com/alokbhagat971-bit/Expense-Manager",
     liveLink: "",
@@ -39,7 +42,7 @@ const projects = [
     title: "Notes Creating and Tracking App",
     description:
       "A simple and clean note-taking app with create, delete, and search functionality, backed by a MongoDB database.",
-    image: "/src/assets/notes.png",
+    image: notes,
     techStack: ["React", "Node.js", "Express", "MongoDB"],
     githubLink: "https://github.com/alokbhagat971-bit/Notes-App",
     liveLink: "",
