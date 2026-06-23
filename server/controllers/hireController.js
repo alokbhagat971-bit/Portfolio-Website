@@ -21,7 +21,7 @@ export const createHireRequest = async (req, res) => {
       });
     }
 
-    // save in DB
+    // save to DB first
     const hireRequest = await HireRequest.create({
       name,
       email,
@@ -58,18 +58,19 @@ Message: ${message}
         `,
       });
 
-      console.log("📧 EMAIL SENT SUCCESS:", emailResult?.messageId);
+      console.log("📧 EMAIL SENT SUCCESS:", emailResult.messageId);
 
     } catch (emailErr) {
-      console.error("🔥 EMAIL FAILED (FULL ERROR):", emailErr);
-      // IMPORTANT: do NOT hide failure
+      console.log("🔥 EMAIL FAILED IN CONTROLLER:");
+      console.log("CODE:", emailErr.code);
+      console.log("MESSAGE:", emailErr.message);
+
       return res.status(500).json({
         success: false,
         message: "Hire request saved but email failed to send.",
       });
     }
 
-    // final response only if email works
     return res.status(201).json({
       success: true,
       message: "Hire request submitted successfully and email sent.",
@@ -77,6 +78,8 @@ Message: ${message}
     });
 
   } catch (error) {
+    console.log("🔥 SERVER ERROR:", error);
+
     if (error.code === 11000) {
       return res.status(409).json({
         success: false,
@@ -84,8 +87,7 @@ Message: ${message}
       });
     }
 
-    console.error("Error creating hire request:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
     });
