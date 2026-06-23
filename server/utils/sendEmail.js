@@ -1,48 +1,27 @@
-import nodemailer from "nodemailer";
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-  logger: true,
-  debug: true,
-});
-
-// 🔥 verify connection at startup (VERY IMPORTANT)
-transporter.verify((error, success) => {
-  if (error) {
-    console.log("🔥 SMTP CONNECTION FAILED:");
-    console.log(error);
-  } else {
-    console.log("✅ SMTP READY TO SEND EMAILS");
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async ({ to, subject, text, html }) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"Portfolio Hire Form" <${process.env.GMAIL_USER}>`,
-      to,
-      subject,
-      text,
-      html,
-    });
+  console.log("📧 Attempting to send email to:", to);
+  
+  const { data, error } = await resend.emails.send({
+    from: 'Portfolio Hire Form <onboarding@resend.dev>',
+    to,
+    subject,
+    text,
+    html,
+  });
 
-    console.log("📧 EMAIL SENT SUCCESS:", info.messageId);
+  console.log("📧 Resend response - data:", data, "error:", error);
 
-    return info;
-  } catch (error) {
-    console.log("🔥 EMAIL SEND FAILED:");
-    console.log("CODE:", error.code);
-    console.log("MESSAGE:", error.message);
-    console.log(error);
-
+  if (error) {
+    console.log("🔥 EMAIL SEND FAILED:", error);
     throw error;
   }
+
+  console.log("📧 EMAIL SENT SUCCESS:", data.id);
+  return data;
 };
 
 export default sendEmail;

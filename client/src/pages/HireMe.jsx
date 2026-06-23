@@ -8,6 +8,7 @@ import { IoSpeedometerSharp } from "react-icons/io5";
 import { HiOutlineChatBubbleLeftRight, HiOutlineRocketLaunch } from "react-icons/hi2";
 import { LuClock, LuShieldCheck, LuStar, LuHeadphones } from "react-icons/lu";
 import { MdWeb, MdStorage, MdSmartToy, MdCode, MdLightbulb } from "react-icons/md";
+import emailjs from '@emailjs/browser';
 
 const footerSocials = [
   { Icon: FaGithub,    href: "https://github.com/alokbhagat971-bit" },
@@ -48,29 +49,47 @@ function HireMe() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatus({ loading: true, error: '', success: false });
+  e.preventDefault();
+  setStatus({ loading: true, error: '', success: false });
 
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/hire`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
+  try {
+    // 1. Save to DB (no email from backend)
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/hire`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.message || 'Something went wrong. Please try again.');
-      }
-
-      setStatus({ loading: false, error: '', success: true });
-      setForm({ name: '', email: '', subject: '', projectType: '', budget: '', timeline: '', message: '' });
-      setCharCount(0);
-    } catch (err) {
-      setStatus({ loading: false, error: err.message, success: false });
+    if (!res.ok) {
+      throw new Error(data.message || 'Something went wrong. Please try again.');
     }
-  };
+
+    // 2. Send email from frontend via EmailJS
+    await emailjs.send(
+      import.meta.env.VITE_EMAILJS_SERVICE_ID,
+      import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+      {
+        name: form.name,
+        email: form.email,
+        subject: form.subject,
+        projectType: form.projectType,
+        budget: form.budget || 'Not specified',
+        timeline: form.timeline || 'Not specified',
+        message: form.message,
+      },
+      import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+    );
+
+    setStatus({ loading: false, error: '', success: true });
+    setForm({ name: '', email: '', subject: '', projectType: '', budget: '', timeline: '', message: '' });
+    setCharCount(0);
+
+  } catch (err) {
+    setStatus({ loading: false, error: err.message, success: false });
+  }
+};
 
   const scrollTo = (id) => {
     navigate('/');
