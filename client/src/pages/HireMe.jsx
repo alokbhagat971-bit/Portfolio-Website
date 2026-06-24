@@ -66,9 +66,7 @@ function HireMe() {
       throw new Error(data.message || 'Something went wrong. Please try again.');
     }
 
-    console.log('SERVICE:', import.meta.env.VITE_EMAILJS_SERVICE_ID);
-console.log('TEMPLATE:', import.meta.env.VITE_EMAILJS_TEMPLATE_ID);
-console.log('KEY:', import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+    
     // 2. Send email from frontend via EmailJS
     await emailjs.send(
       import.meta.env.VITE_EMAILJS_SERVICE_ID,
