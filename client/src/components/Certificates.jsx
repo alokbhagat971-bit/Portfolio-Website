@@ -29,7 +29,7 @@ function CertCard({ cert, index, delay }) {
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.45, delay }}
-      className={`group relative flex items-center gap-4 px-5 py-4
+      className={`group relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4
         rounded-2xl border ${style.border}
         bg-white dark:bg-[#0d0d1a]
         shadow-sm hover:shadow-lg ${style.glow}
@@ -47,30 +47,30 @@ function CertCard({ cert, index, delay }) {
         bg-gradient-to-r from-violet-500/5 via-transparent to-transparent pointer-events-none rounded-2xl" />
 
       {/* Icon box */}
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0
+      <div className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0
         border ${style.border} ${style.bg} shadow-sm ml-2`}>
-        <Icon size={19} className={style.text} />
+        <Icon size={16} className={style.text} />
       </div>
 
       {/* Title + issuer */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2">
+        <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2">
           {cert.title}
         </p>
-        <p className={`text-xs font-medium mt-1 ${style.text}`}>
+        <p className={`text-[10px] sm:text-xs font-medium mt-0.5 sm:mt-1 ${style.text}`}>
           {cert.issuer}
         </p>
       </div>
 
       {/* Year badge + arrow */}
-      <div className="flex items-center gap-2 shrink-0">
-        <span className={`text-[11px] font-bold px-3 py-1.5 rounded-xl
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <span className={`text-[10px] sm:text-[11px] font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl
           border ${style.border} ${style.bg} ${style.text}`}>
           {cert.year}
         </span>
         <ExternalLink
-          size={14}
-          className="text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 group-hover:text-violet-400 transition-all duration-200"
+          size={13}
+          className="text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 group-hover:text-violet-400 transition-all duration-200 hidden sm:block"
         />
       </div>
     </motion.a>
@@ -81,7 +81,7 @@ function Certificates() {
   return (
     <section
       id="certificates"
-      className="relative bg-white dark:bg-[#05050a] px-8 md:px-16 py-24 overflow-hidden"
+      className="relative bg-white dark:bg-[#05050a] px-6 sm:px-8 md:px-16 py-16 sm:py-24 overflow-hidden"
     >
       {/* Glows */}
       <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-violet-300/30 dark:bg-violet-700/10 rounded-full blur-[120px] pointer-events-none" />
@@ -89,13 +89,13 @@ function Certificates() {
 
       <div className="relative z-10 max-w-6xl mx-auto">
 
-        {/* ── Header ── */}
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-10"
+          className="mb-8 sm:mb-10"
         >
           <div className="flex items-center gap-2 mb-3">
             <span className="w-2 h-2 rounded-full bg-violet-500" />
@@ -105,7 +105,7 @@ function Certificates() {
             <span className="w-2 h-2 rounded-full bg-violet-500" />
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
             My{" "}
             <span className="text-violet-500 underline decoration-violet-500/40 underline-offset-4">
               Certificates
@@ -116,8 +116,8 @@ function Certificates() {
           </p>
         </motion.div>
 
-        {/* ── Certificate grid ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        {/* Certificate grid: 1 col mobile, 2 col desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5 sm:gap-3">
           {certificates.map((cert, index) => (
             <CertCard key={cert.id} cert={cert} index={index} delay={index * 0.08} />
           ))}

@@ -28,10 +28,10 @@ const services = [
 ];
 
 const expectations = [
-  { icon: <IoSpeedometerSharp size={26} />,           label: "Fast & Reliable",      desc: "I value your time and deliver solutions within deadlines." },
-  { icon: <LuStar size={26} />,                       label: "High Quality",         desc: "Clean code, best practices, and scalable solutions." },
-  { icon: <HiOutlineChatBubbleLeftRight size={26} />, label: "Clear Communication",  desc: "Regular updates and transparent communication throughout." },
-  { icon: <LuHeadphones size={26} />,                 label: "Long Term Support",    desc: "Continued support even after project completion." },
+  { icon: <IoSpeedometerSharp size={26} />,           label: "Fast & Reliable",     desc: "I value your time and deliver solutions within deadlines." },
+  { icon: <LuStar size={26} />,                       label: "High Quality",        desc: "Clean code, best practices, and scalable solutions." },
+  { icon: <HiOutlineChatBubbleLeftRight size={26} />, label: "Clear Communication", desc: "Regular updates and transparent communication throughout." },
+  { icon: <LuHeadphones size={26} />,                 label: "Long Term Support",   desc: "Continued support even after project completion." },
 ];
 
 function HireMe() {
@@ -49,49 +49,37 @@ function HireMe() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setStatus({ loading: true, error: '', success: false });
+    e.preventDefault();
+    setStatus({ loading: true, error: '', success: false });
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/hire`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Something went wrong. Please try again.');
 
-  try {
-    // 1. Save to DB (no email from backend)
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/hire`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
+          name: form.name, email: form.email, subject: form.subject,
+          projectType: form.projectType,
+          budget: form.budget || 'Not specified',
+          timeline: form.timeline || 'Not specified',
+          message: form.message,
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.message || 'Something went wrong. Please try again.');
+      setStatus({ loading: false, error: '', success: true });
+      setForm({ name: '', email: '', subject: '', projectType: '', budget: '', timeline: '', message: '' });
+      setCharCount(0);
+    } catch (err) {
+      setStatus({ loading: false, error: err.message, success: false });
     }
-
-    
-    // 2. Send email from frontend via EmailJS
-    await emailjs.send(
-      import.meta.env.VITE_EMAILJS_SERVICE_ID,
-      import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-      {
-        name: form.name,
-        email: form.email,
-        subject: form.subject,
-        projectType: form.projectType,
-        budget: form.budget || 'Not specified',
-        timeline: form.timeline || 'Not specified',
-        message: form.message,
-      },
-      import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-    );
-
-
-    setStatus({ loading: false, error: '', success: true });
-    setForm({ name: '', email: '', subject: '', projectType: '', budget: '', timeline: '', message: '' });
-    setCharCount(0);
-
-  } catch (err) {
-    setStatus({ loading: false, error: err.message, success: false });
-  }
-};
+  };
 
   const scrollTo = (id) => {
     navigate('/');
@@ -101,14 +89,14 @@ function HireMe() {
   };
 
   const inputClass = `
-    w-full rounded-xl px-4 py-3 text-base transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500
+    w-full rounded-xl px-4 py-3 text-sm sm:text-base transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500
     bg-gray-100 dark:bg-[#0a0a18]
     border border-gray-300 dark:border-gray-700/60
     text-gray-900 dark:text-white
     placeholder-gray-400 dark:placeholder-gray-500
   `;
   const selectClass = `
-    w-full rounded-xl px-4 py-3 text-base transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500
+    w-full rounded-xl px-4 py-3 text-sm sm:text-base transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500
     bg-gray-100 dark:bg-[#0a0a18]
     border border-gray-300 dark:border-gray-700/60
     text-gray-600 dark:text-gray-400
@@ -121,45 +109,45 @@ function HireMe() {
       <Navbar />
 
       {/* Breadcrumb */}
-      <div className="px-8 md:px-16 py-3 text-sm text-gray-400 dark:text-gray-500 flex items-center gap-2 border-b border-gray-100 dark:border-gray-800/50">
+      <div className="px-4 sm:px-8 md:px-16 py-3 text-sm text-gray-400 dark:text-gray-500 flex items-center gap-2 border-b border-gray-100 dark:border-gray-800/50">
         <button onClick={() => navigate('/')} className="hover:text-violet-500 transition-colors">🏠 Home</button>
         <span>/</span>
         <span className="text-violet-500 font-medium">Hire Me</span>
       </div>
 
       {/* ── Hero ── */}
-      <section className="relative px-8 md:px-16 pt-16 pb-20 overflow-hidden">
+      <section className="relative px-4 sm:px-8 md:px-16 pt-12 sm:pt-16 pb-16 sm:pb-20 overflow-hidden">
         {/* Glows */}
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-violet-300/30 dark:bg-violet-700/20 rounded-full blur-[140px] pointer-events-none -translate-x-1/4 -translate-y-1/4" />
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-fuchsia-300/20 dark:bg-fuchsia-700/15 rounded-full blur-[120px] pointer-events-none translate-x-1/4 -translate-y-1/4" />
+        <div className="absolute top-0 left-0 w-64 sm:w-[500px] h-64 sm:h-[500px] bg-violet-300/30 dark:bg-violet-700/20 rounded-full blur-[140px] pointer-events-none -translate-x-1/4 -translate-y-1/4" />
+        <div className="absolute top-0 right-0 w-48 sm:w-[400px] h-48 sm:h-[400px] bg-fuchsia-300/20 dark:bg-fuchsia-700/15 rounded-full blur-[120px] pointer-events-none translate-x-1/4 -translate-y-1/4" />
 
-        <div className="relative z-10 max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12">
+        <div className="relative z-10 max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-12">
 
-          {/* Left */}
-          <div className="flex-1">
-            <div className="inline-flex items-center gap-2 border border-violet-400/50 dark:border-violet-500/40 bg-violet-50 dark:bg-violet-500/10 rounded-full px-5 py-2 text-sm text-violet-600 dark:text-violet-400 font-medium mb-8">
+          {/* Left: text */}
+          <div className="flex-1 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 border border-violet-400/50 dark:border-violet-500/40 bg-violet-50 dark:bg-violet-500/10 rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm text-violet-600 dark:text-violet-400 font-medium mb-6 sm:mb-8">
               <span>✦</span> LET'S BUILD SOMETHING AMAZING <span>✦</span>
             </div>
 
-            <h1 className="text-6xl md:text-7xl font-extrabold leading-tight mb-6">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold leading-tight mb-5 sm:mb-6">
               Let's Work<br />
               <span className="bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
                 Together
               </span>
             </h1>
 
-            <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed max-w-lg mb-10">
+            <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg leading-relaxed max-w-lg mb-8 sm:mb-10 mx-auto lg:mx-0">
               Have a project idea, collaboration opportunity, or just want to say hi?
               I'd love to hear from you. Fill out the form and I'll get back to you soon!
             </p>
 
-            <div className="flex flex-wrap gap-6 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex flex-wrap gap-3 sm:gap-6 text-sm text-gray-500 dark:text-gray-400 justify-center lg:justify-start">
               {[
-                { icon: <IoSpeedometerSharp size={16} />,    label: "Quick Response" },
-                { icon: <LuShieldCheck size={16} />,         label: "Professional Support" },
-                { icon: <HiOutlineRocketLaunch size={16} />, label: "Results Driven" },
+                { icon: <IoSpeedometerSharp size={15} />,    label: "Quick Response" },
+                { icon: <LuShieldCheck size={15} />,         label: "Professional Support" },
+                { icon: <HiOutlineRocketLaunch size={15} />, label: "Results Driven" },
               ].map(({ icon, label }) => (
-                <div key={label} className="flex items-center gap-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full px-4 py-2">
+                <div key={label} className="flex items-center gap-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full px-3 sm:px-4 py-2 text-xs sm:text-sm">
                   <span className="text-violet-500">{icon}</span>
                   <span className="font-medium">{label}</span>
                 </div>
@@ -167,15 +155,15 @@ function HireMe() {
             </div>
           </div>
 
-          {/* Right: envelope */}
-          <div className="flex-1 flex justify-center">
+          {/* Right: envelope — hidden on small mobile, shown from sm up */}
+          <div className="hidden sm:flex flex-1 justify-center">
             <div className="relative">
               <div className="absolute inset-0 bg-violet-500/30 dark:bg-violet-600/30 rounded-full blur-[80px] scale-110" />
               <div className="absolute -inset-4 bg-fuchsia-400/10 rounded-full blur-[60px]" />
               <img
                 src={envelope}
                 alt="envelope"
-                className="relative w-80 md:w-[420px] object-contain drop-shadow-2xl"
+                className="relative w-56 sm:w-80 md:w-[420px] object-contain drop-shadow-2xl"
                 style={{ filter: 'drop-shadow(0 0 60px rgba(139,92,246,0.5))' }}
               />
             </div>
@@ -184,35 +172,36 @@ function HireMe() {
       </section>
 
       {/* ── Form + Sidebar ── */}
-      <section className="px-8 md:px-16 pb-24">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <section className="px-4 sm:px-8 md:px-16 pb-16 sm:pb-24">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 
           {/* Sidebar */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-5 sm:gap-6">
 
             {/* Tell Me About card */}
-            <div className="rounded-2xl border border-gray-200 dark:border-gray-700/60 bg-gray-50 dark:bg-[#0d0d1e] p-7 shadow-sm dark:shadow-none">
-              <div className="flex items-center gap-4 mb-5">
-                <div className="w-11 h-11 rounded-xl bg-violet-100 dark:bg-violet-600/20 flex items-center justify-center flex-shrink-0">
-                  <FaPaperPlane size={18} className="text-violet-600 dark:text-violet-400" />
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700/60 bg-gray-50 dark:bg-[#0d0d1e] p-5 sm:p-7 shadow-sm dark:shadow-none">
+              <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-violet-100 dark:bg-violet-600/20 flex items-center justify-center flex-shrink-0">
+                  <FaPaperPlane size={16} className="text-violet-600 dark:text-violet-400" />
                 </div>
                 <div>
-                  <p className="text-base font-bold text-gray-900 dark:text-white">Tell Me About</p>
-                  <p className="text-sm text-violet-600 dark:text-violet-400 font-semibold">Your Project</p>
+                  <p className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">Tell Me About</p>
+                  <p className="text-xs sm:text-sm text-violet-600 dark:text-violet-400 font-semibold">Your Project</p>
                 </div>
               </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-5 sm:mb-6 leading-relaxed">
                 I'm always open to discussing new opportunities, creative ideas, or partnerships.
               </p>
-              <ul className="flex flex-col gap-5">
+              {/* Services: 2-col grid on mobile to save vertical space */}
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 sm:gap-3 lg:gap-5">
                 {services.map(({ icon, title, desc }) => (
-                  <li key={title} className="flex items-start gap-4">
-                    <div className="w-9 h-9 rounded-xl bg-violet-100 dark:bg-violet-600/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-violet-600 dark:text-violet-400">
+                  <li key={title} className="flex items-start gap-3 sm:gap-4">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-violet-100 dark:bg-violet-600/15 flex items-center justify-center flex-shrink-0 mt-0.5 text-violet-600 dark:text-violet-400">
                       {icon}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{title}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">{desc}</p>
+                      <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">{title}</p>
+                      <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 mt-0.5">{desc}</p>
                     </div>
                   </li>
                 ))}
@@ -220,7 +209,7 @@ function HireMe() {
             </div>
 
             {/* Quote card */}
-            <div className="rounded-2xl border border-violet-300 dark:border-violet-500/30 bg-violet-50 dark:bg-[#0d0d1e] p-7">
+            <div className="rounded-2xl border border-violet-300 dark:border-violet-500/30 bg-violet-50 dark:bg-[#0d0d1e] p-5 sm:p-7">
               <span className="text-4xl text-violet-500 dark:text-violet-400 font-serif leading-none">"</span>
               <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mt-2">
                 The best way to predict the future is to invent it together.
@@ -232,21 +221,21 @@ function HireMe() {
           </div>
 
           {/* Form card */}
-          <div className="lg:col-span-2 rounded-2xl border border-gray-200 dark:border-gray-700/60 bg-gray-50 dark:bg-[#0d0d1e] p-8 shadow-sm dark:shadow-none">
-            <div className="flex items-center gap-4 mb-2">
-              <div className="w-11 h-11 rounded-xl bg-violet-100 dark:bg-violet-600/20 flex items-center justify-center flex-shrink-0">
-                <FaPaperPlane size={18} className="text-violet-600 dark:text-violet-400" />
+          <div className="lg:col-span-2 rounded-2xl border border-gray-200 dark:border-gray-700/60 bg-gray-50 dark:bg-[#0d0d1e] p-5 sm:p-8 shadow-sm dark:shadow-none">
+            <div className="flex items-center gap-3 sm:gap-4 mb-2">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-violet-100 dark:bg-violet-600/20 flex items-center justify-center flex-shrink-0">
+                <FaPaperPlane size={16} className="text-violet-600 dark:text-violet-400" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Send Me a Message</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Fill out the form and I'll get back to you as soon as possible.</p>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Send Me a Message</h2>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Fill out the form and I'll get back to you as soon as possible.</p>
               </div>
             </div>
 
-            <div className="h-px bg-gray-200 dark:bg-gray-700/40 my-6" />
+            <div className="h-px bg-gray-200 dark:bg-gray-700/40 my-5 sm:my-6" />
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
                   <label className={labelClass}>Your Name <span className="text-red-400">*</span></label>
                   <input name="name" value={form.name} onChange={handleChange} placeholder="Enter your name" className={inputClass} required />
@@ -262,7 +251,7 @@ function HireMe() {
                 <input name="subject" value={form.subject} onChange={handleChange} placeholder="What is this regarding?" className={inputClass} required />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
                   <label className={labelClass}>Project Type <span className="text-red-400">*</span></label>
                   <select name="projectType" value={form.projectType} onChange={handleChange} className={selectClass} required>
@@ -298,20 +287,20 @@ function HireMe() {
                   value={form.message}
                   onChange={handleChange}
                   placeholder="Tell me about your project, requirements, ideas, or anything else..."
-                  rows={6}
+                  rows={5}
                   maxLength={500}
                   className={`${inputClass} resize-none`}
                   required
                 />
-                <p className="text-right text-sm text-gray-400 dark:text-gray-500 mt-1">{charCount} / 500</p>
+                <p className="text-right text-xs sm:text-sm text-gray-400 dark:text-gray-500 mt-1">{charCount} / 500</p>
               </div>
 
               <button
                 type="submit"
                 disabled={status.loading}
-                className="w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-base py-4 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-lg shadow-violet-600/30"
+                className="w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-sm sm:text-base py-3.5 sm:py-4 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-lg shadow-violet-600/30"
               >
-                <FaPaperPlane size={16} /> {status.loading ? 'Sending...' : 'Send Message'}
+                <FaPaperPlane size={15} /> {status.loading ? 'Sending...' : 'Send Message'}
               </button>
 
               {status.success && (
@@ -323,8 +312,8 @@ function HireMe() {
                 <p className="text-center text-sm text-red-500 font-medium">{status.error}</p>
               )}
 
-              <p className="text-center text-sm text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2">
-                <LuClock size={14} /> I usually reply within{" "}
+              <p className="text-center text-xs sm:text-sm text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2">
+                <LuClock size={13} /> I usually reply within{" "}
                 <span className="text-violet-500 font-semibold">24 hours</span>
               </p>
             </form>
@@ -333,26 +322,27 @@ function HireMe() {
       </section>
 
       {/* ── What You Can Expect ── */}
-      <section className="px-8 md:px-16 pb-24 bg-gray-50 dark:bg-[#080812] py-20">
+      <section className="px-4 sm:px-8 md:px-16 pb-16 sm:pb-24 bg-gray-50 dark:bg-[#080812] py-14 sm:py-20">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-4 mb-12 justify-center">
-            <div className="h-px flex-1 max-w-[100px] bg-gray-300 dark:bg-gray-700/60" />
-            <h2 className="text-lg font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+          <div className="flex items-center gap-3 sm:gap-4 mb-8 sm:mb-12 justify-center">
+            <div className="h-px flex-1 max-w-[60px] sm:max-w-[100px] bg-gray-300 dark:bg-gray-700/60" />
+            <h2 className="text-base sm:text-lg font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2 text-center">
               <span className="text-violet-500">→</span> What You Can Expect <span className="text-violet-500">←</span>
             </h2>
-            <div className="h-px flex-1 max-w-[100px] bg-gray-300 dark:bg-gray-700/60" />
+            <div className="h-px flex-1 max-w-[60px] sm:max-w-[100px] bg-gray-300 dark:bg-gray-700/60" />
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* 1-col on mobile, 2-col on sm, 4-col on lg */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             {expectations.map(({ icon, label, desc }) => (
               <div
                 key={label}
-                className="rounded-2xl border border-gray-200 dark:border-gray-700/50 bg-white dark:bg-[#0d0d1e] p-6 flex flex-col gap-4 hover:border-violet-400 dark:hover:border-violet-500 transition-colors shadow-sm dark:shadow-none"
+                className="rounded-2xl border border-gray-200 dark:border-gray-700/50 bg-white dark:bg-[#0d0d1e] p-5 sm:p-6 flex flex-col gap-3 sm:gap-4 hover:border-violet-400 dark:hover:border-violet-500 transition-colors shadow-sm dark:shadow-none"
               >
-                <div className="w-12 h-12 rounded-xl bg-violet-100 dark:bg-violet-600/20 flex items-center justify-center text-violet-600 dark:text-violet-400">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-violet-100 dark:bg-violet-600/20 flex items-center justify-center text-violet-600 dark:text-violet-400">
                   {icon}
                 </div>
-                <p className="text-base font-bold text-gray-900 dark:text-white">{label}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{desc}</p>
+                <p className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">{label}</p>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -360,10 +350,10 @@ function HireMe() {
       </section>
 
       {/* ── CTA Banner ── */}
-      <section className="px-8 md:px-16 py-16">
-        <div className="max-w-6xl mx-auto rounded-2xl border border-violet-300 dark:border-violet-500/30 bg-gradient-to-r from-violet-50 to-fuchsia-50 dark:from-[#0d0d1e] dark:to-[#120d1e] px-10 py-10 flex flex-col sm:flex-row items-center justify-between gap-8">
+      <section className="px-4 sm:px-8 md:px-16 py-12 sm:py-16">
+        <div className="max-w-6xl mx-auto rounded-2xl border border-violet-300 dark:border-violet-500/30 bg-gradient-to-r from-violet-50 to-fuchsia-50 dark:from-[#0d0d1e] dark:to-[#120d1e] px-6 sm:px-10 py-8 sm:py-10 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-8 text-center sm:text-left">
           <div>
-            <h3 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white mb-2">
               Ready to start your{" "}
               <span className="bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
                 next project
@@ -375,16 +365,16 @@ function HireMe() {
           </div>
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex-shrink-0 bg-violet-600 hover:bg-violet-500 text-white font-bold text-base px-8 py-4 rounded-full flex items-center gap-3 transition-colors shadow-lg shadow-violet-600/30"
+            className="flex-shrink-0 bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm sm:text-base px-6 sm:px-8 py-3.5 sm:py-4 rounded-full flex items-center gap-3 transition-colors shadow-lg shadow-violet-600/30"
           >
-            <FaPaperPlane size={16} /> Hire Me Now
+            <FaPaperPlane size={15} /> Hire Me Now
           </button>
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-gray-200 dark:border-gray-700/40 bg-gray-50 dark:bg-[#05050a] px-8 md:px-16 py-12">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+      <footer className="border-t border-gray-200 dark:border-gray-700/40 bg-gray-50 dark:bg-[#05050a] px-4 sm:px-8 md:px-16 py-10 sm:py-12">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10 md:gap-12">
 
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2">
@@ -392,10 +382,9 @@ function HireMe() {
               <span className="text-gray-900 dark:text-white font-bold text-xl">Alok Bhagat</span>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-              Building digital experiences that make a difference.<br />
-              Let's create something amazing together!
+              Building digital experiences that make a difference. Let's create something amazing together!
             </p>
-            <div className="flex items-center gap-3 mt-1">
+            <div className="flex items-center gap-2 sm:gap-3 mt-1">
               {footerSocials.map(({ Icon, href }) => (
                 <a key={href} href={href} target="_blank" rel="noopener noreferrer"
                   className="w-9 h-9 rounded-full border border-gray-300 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-violet-500 hover:border-violet-400 transition-colors">
@@ -406,7 +395,7 @@ function HireMe() {
           </div>
 
           <div>
-            <h4 className="text-base font-bold text-gray-900 dark:text-white mb-5">Quick Links</h4>
+            <h4 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-4 sm:mb-5">Quick Links</h4>
             <div className="grid grid-cols-2 gap-2">
               {quickLinks.map(label => (
                 <button
@@ -420,8 +409,8 @@ function HireMe() {
             </div>
           </div>
 
-          <div>
-            <h4 className="text-base font-bold text-gray-900 dark:text-white mb-5">Let's Connect</h4>
+          <div className="sm:col-span-2 md:col-span-1">
+            <h4 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-4 sm:mb-5">Let's Connect</h4>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
               Feel free to reach out through the form above. I'd love to hear your ideas!
             </p>
@@ -432,7 +421,7 @@ function HireMe() {
           </div>
         </div>
 
-        <div className="mt-10 pt-5 border-t border-gray-200 dark:border-gray-700/40 text-center text-sm text-gray-400 dark:text-gray-500">
+        <div className="mt-8 sm:mt-10 pt-5 border-t border-gray-200 dark:border-gray-700/40 text-center text-xs sm:text-sm text-gray-400 dark:text-gray-500">
           © 2026 Alok Bhagat. All rights reserved.
         </div>
       </footer>

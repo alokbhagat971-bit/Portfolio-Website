@@ -3,19 +3,11 @@ import { ArrowRight } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import projects from "../data/project.js";
 
-// Badge colors keyed to YOUR actual tech stack values
 const badgeColors = {
-  // Frontend
   "React":         "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-
-  // Backend
   "Node.js":       "bg-green-500/10 text-green-400 border-green-500/20",
   "Express":       "bg-gray-500/10 text-gray-300 border-gray-500/20",
-
-  // Database
   "MongoDB":       "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-
-  // AI / ML
   "AI API":        "bg-violet-500/10 text-violet-400 border-violet-500/20",
   "Python":        "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
   "Flask":         "bg-orange-500/10 text-orange-400 border-orange-500/20",
@@ -24,19 +16,13 @@ const badgeColors = {
 
 const defaultBadge = "bg-indigo-500/10 text-indigo-400 border-indigo-500/20";
 
-// Auto-derive category label from techStack
 function getCategory(techStack) {
   const has = (t) => techStack.includes(t);
-  if (has("AI API") || has("scikit-learn") || has("Flask") || has("Python")) {
-    return "Full Stack + AI";
-  }
-  if (has("Node.js") || has("Express") || has("MongoDB")) {
-    return "Full Stack";
-  }
+  if (has("AI API") || has("scikit-learn") || has("Flask") || has("Python")) return "Full Stack + AI";
+  if (has("Node.js") || has("Express") || has("MongoDB")) return "Full Stack";
   return "Frontend";
 }
 
-// Category badge styles
 const categoryColors = {
   "Full Stack":      "bg-violet-600/20 text-violet-300 border-violet-500/30",
   "Full Stack + AI": "bg-fuchsia-600/20 text-fuchsia-300 border-fuchsia-500/30",
@@ -67,22 +53,18 @@ function ProjectCard({ item, delay }) {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 p-5 gap-3">
+      <div className="flex flex-col flex-1 p-4 sm:p-5 gap-2.5 sm:gap-3">
 
         {/* Title + category badge */}
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div>
-            <h2 className="text-base font-bold text-gray-900 dark:text-white">
+        <div className="flex items-start justify-between gap-2 flex-wrap">
+          <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white flex-1 min-w-0">
             {item.title}
-            
           </h2>
-          </div>
           <span
-            className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg border ${
+            className={`text-[10px] font-semibold px-2 sm:px-2.5 py-1 rounded-lg border shrink-0 ${
               categoryColors[category] || defaultBadge
             }`}
           >
-
             {category}
           </span>
         </div>
@@ -93,11 +75,11 @@ function ProjectCard({ item, delay }) {
         </p>
 
         {/* Tech stack pills */}
-        <div className="flex flex-wrap gap-1.5 mt-auto">
+        <div className="flex flex-wrap gap-1 sm:gap-1.5 mt-auto">
           {item.techStack.map((tech, index) => (
             <span
               key={index}
-              className={`text-[11px] font-medium px-2.5 py-1 rounded-lg border ${
+              className={`text-[10px] sm:text-[11px] font-medium px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg border ${
                 badgeColors[tech] || defaultBadge
               }`}
             >
@@ -107,21 +89,21 @@ function ProjectCard({ item, delay }) {
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-gray-200 dark:bg-white/10 mt-2" />
+        <div className="h-px bg-gray-200 dark:bg-white/10 mt-1 sm:mt-2" />
 
-        {/* Footer: GitHub only (Live Demo to be added later) */}
-        <div className="flex items-center justify-end pt-1">
+        {/* Footer */}
+        <div className="flex items-center justify-end pt-0.5 sm:pt-1">
           <a
             href={item.githubLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 rounded-lg text-gray-500 dark:text-gray-400
+            className="p-1.5 sm:p-2 rounded-lg text-gray-500 dark:text-gray-400
               hover:text-gray-900 dark:hover:text-white
               hover:bg-gray-100 dark:hover:bg-white/10
               transition-colors"
             aria-label="GitHub"
           >
-            <FaGithub size={18} />
+            <FaGithub size={17} />
           </a>
         </div>
 
@@ -134,41 +116,41 @@ function Projects() {
   return (
     <section
       id="projects"
-      className="relative bg-white dark:bg-[#05050a] px-8 md:px-16 py-24 overflow-hidden"
+      className="relative bg-white dark:bg-[#05050a] px-6 sm:px-8 md:px-16 py-16 sm:py-24 overflow-hidden"
     >
       {/* Ambient glow */}
       <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-violet-200/40 dark:bg-violet-700/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="relative z-10 max-w-6xl mx-auto">
 
-        {/* ── Section header ── */}
+        {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="flex items-center justify-between mb-10"
+          className="flex items-center justify-between mb-8 sm:mb-10"
         >
           <div className="flex items-center gap-2">
-            <h1 className="text-4xl md:text-3xl font-extrabold text-gray-900 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
               My <span className="text-violet-500 underline decoration-violet-500/40 underline-offset-4">Projects</span>
             </h1>
-            <span className="w-2.5 h-2.5 rounded-full bg-violet-500 mt-1" />
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-violet-500 mt-1" />
           </div>
 
           <a
             href="https://github.com/alokbhagat971-bit?tab=repositories"
-            className="flex items-center gap-1.5 text-sm font-medium
+            className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-medium
               text-violet-600 dark:text-violet-400
               hover:text-violet-700 dark:hover:text-violet-300
-              transition-colors"
+              transition-colors shrink-0"
           >
-            View All Projects <ArrowRight size={15} />
+            View All <ArrowRight size={13} />
           </a>
         </motion.div>
 
-        {/* ── Project cards grid ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {/* Project cards grid: 1 col mobile, 2 col tablet, 4 col desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {projects.map((item, index) => (
             <ProjectCard key={item.id} item={item} delay={index * 0.07} />
           ))}
